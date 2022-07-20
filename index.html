@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <title>To do List</title>
+    <style>
+        body{
+            margin: 0px;
+            padding: 0px;
+            background-color: #E8E8E8;
+        }
+        .container{
+            margin-top: 100px;
+            text-align: center;
+        }
+    </style>
+</head>
+<html>
+<div class="container">
+    <div class="col-md-8 offset-2" style="background-color: black; border:3px solid navy;">
+        <br>
+        <h1 style="font-family:times new roman; color: white;">
+            To-Do List
+        </h1>
+        <br>
+        <div>
+            <input style="width:400px; height:35px;" name="text" id="text" placeholder="Please add your to-do tasks" />
+            <br>
+            <input type="hidden" id="saveIndex" />
+            <button style="width:90px; height:35px; background-color: green; border-radius:5px;margin-left: 310px; color:white;" id="add_todo_task">Add
+            </button>
+            <br><button style="display: none;color:white; background-color:green; margin-left: 310px; border-radius:5px; width:90px; height:35px;" id="save_todo_Task">Update
+            </button>
+        </div>
+        <br>
+        <div id="listBox"></div>
+    </div>
+</div>
+
+<script>
+    const text = document.getElementById("text");
+    const addTaskButton = document.getElementById("add_todo_task");
+    const saveTaskButton = document.getElementById("save_todo_Task");
+    const listBox = document.getElementById("listBox");
+    const saveInd = document.getElementById("saveIndex");
+    addTaskButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        let todo = localStorage.getItem("todo");
+        if (todo === null) {
+            todoArray = [];
+        } else {
+            todoArray = JSON.parse(todo);
+        }
+        todoArray.push(text.value);
+        text.value = "";
+        localStorage.setItem("todo", JSON.stringify(todoArray));
+        displayTodo();
+    });
+    function displayTodo() {
+        let todo = localStorage.getItem("todo");
+        if (todo === null) {
+            todoArray = [];
+        } else {
+            todoArray = JSON.parse(todo);
+        }
+        let htmlCode = "";
+        todoArray.forEach((list, ind) => {
+            htmlCode += `<div class='flex mb-4 items-center'>
+          <p class='w-full text-white-darkest' style="color:white">${list}</p>
+          <button onclick='edit(${ind})' style="color:white; background-color:orange; border-radius:5px; width:90px; height:35px;">Edit</button>
+          <button onclick='deleteTodo(${ind})'  style="color:white; background-color:red; border-radius:5px; width:90px; height:35px;">Delete</button>
+       </div>`;
+        });
+        listBox.innerHTML = htmlCode;
+    }
+
+    function deleteTodo(ind) {
+        let todo = localStorage.getItem("todo");
+        todoArray = JSON.parse(todo);
+        todoArray.splice(ind, 1);
+        localStorage.setItem("todo", JSON.stringify(todoArray));
+        displayTodo();
+    }
+    function edit(ind) {
+        saveInd.value = ind;
+        let todo = localStorage.getItem("todo");
+        todoArray = JSON.parse(todo);
+        text.value = todoArray[ind];
+        addTaskButton.style.display = "none";
+        saveTaskButton.style.display = "block";
+    }
+    saveTaskButton.addEventListener("click", () => {
+        let todo = localStorage.getItem("todo");
+        todoArray = JSON.parse(todo);
+        let id = saveInd.value;
+        todoArray[id] = text.value;
+        addTaskButton.style.display = "block";
+        saveTaskButton.style.display = "none";
+        text.value = "";
+        localStorage.setItem("todo", JSON.stringify(todoArray));
+        displayTodo();
+    });
+</script>
+
+</html>
